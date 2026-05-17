@@ -335,111 +335,87 @@ async function startLiveStream() {
         document.getElementById('live-stream-btn').classList.add('hidden');
         document.getElementById('stop-stream-btn').classList.remove('hidden');
 
-        console.log(`Attempting Secure WebSocket for ${nodeId}`);
         const wsProtocol = isLocal ? 'ws' : 'wss';
         const wsHost = isLocal ? `${window.location.hostname}:8000` : 'aadiljm-drpet.hf.space';
-        streamSocket = new WebSocket(`${wsProtocol}://${wsHost}/ws/stream?node_id=${nodeId}`);
+        let retryCount = 0;
 
-        // Reveal results panel immediately for visual feedback
-        document.getElementById('analysis-results').classList.remove('hidden');
-        document.getElementById('insight-idle').classList.add('hidden');
-        document.getElementById('api-status-text').innerText = "Establishing Neural Link...";
-        logDebug(`Connecting WS: ${wsProtocol}://${wsHost}...`);
+        const connect = () => {
+            logDebug(`Attempting Link (${retryCount + 1})...`);
+            streamSocket = new WebSocket(`${wsProtocol}://${wsHost}/ws/stream?node_id=${nodeId}`);
 
-        streamSocket.onopen = () => {
-            logDebug("WebSocket Handshake Success", "#0f0");
-            console.log("WebSocket connected to behavioral engine.");
-            showToast("Camera Link Active", "📡");
+            streamSocket.onopen = () => {
+                logDebug("WebSocket Handshake Success", "#0f0");
+                showToast("Camera Link Active", "📡");
+                retryCount = 0;
 
-            // Start the frame capture loop
-            streamInterval = setInterval(() => {
-                if (streamSocket.readyState === WebSocket.OPEN) {
-                    // Optimization: Downscale to 640px MAX for bandwidth stability
-                    const scale = Math.min(640 / video.videoWidth, 1.0);
-                    canvas.width = video.videoWidth * scale;
-                    canvas.height = video.videoHeight * scale;
-
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob((blob) => {
-                        if (blob) streamSocket.send(blob);
-                    }, 'image/jpeg', 0.5); // Fast JPEG for real-time
-                }
-            }, 400); // 2.5 FPS is good for live tracking
-        };
-
-        streamSocket.onerror = (e) => {
-            logDebug(`WebSocket Connectivity Error`, '#f55');
-            console.error("WebSocket Connection Error:", e);
-            showToast('System Link Failed', '❌');
-            document.getElementById('api-status-text').innerText = "Offline";
-        };
-
-        streamSocket.onclose = () => {
-            console.log("WebSocket Connection Closed");
-            if (streamInterval) clearInterval(streamInterval);
-        };
-
-        live_sessions_markers_count = 0;
-
-        streamSocket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-
-            if (data.status === "connected") {
-                console.log("Neural Link Handshake:", data.message);
-                document.getElementById('api-status-text').innerText = "Establishing Interface...";
-                showToast(data.message, "🛰️");
-            }
-
-            if (data.status === "active") {
-                currentSessionId = data.session_id;
-                const metrics = data.live_metrics;
-
-                if (metrics.pet_detected) {
-                    // Update main UI visibility
-                    document.getElementById('metrics-card').classList.add('active');
-
-                    const liveScore = Math.round(metrics.confidence * 100);
-                    document.getElementById('ring-pct').innerText = `${liveScore}%`;
-                    const offset = (metrics.confidence) * 628;
-                    document.getElementById('ring-fill').style.strokeDasharray = `${offset}, 628`;
-
-                    document.getElementById('emotion-value').innerText = metrics.behavior;
-                    if (document.getElementById('emotion-value-hud')) {
-                        document.getElementById('emotion-value-hud').innerText = metrics.behavior;
-                        document.getElementById('hud-stats').style.opacity = '1';
-                        document.getElementById('hud-stats').style.transform = 'translateY(0)';
+                streamInterval = setInterval(() => {
+                    if (streamSocket.readyState === WebSocket.OPEN) {
+                        const scale = Math.min(640 / video.videoWidth, 1.0);
+                        canvas.width = video.videoWidth * scale;
+                        canvas.height = video.videoHeight * scale;
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob((blob) => {
+                            if (blob) streamSocket.send(blob);
+                        }, 'image/jpeg', 0.5);
                     }
+                }, 400);
+            };
 
-                    document.getElementById('happiness-score-text').innerText = `${liveScore}%`;
-                    document.getElementById('api-status-text').innerText = `Tracking: ${metrics.type}`;
+            streamSocket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.status === "connected") logDebug("⚡ Neural Pulse Stabilized");
+                if (data.status === "active") {
+                    currentSessionId = data.session_id;
+                    const metrics = data.live_metrics;
+                    if (metrics.pet_detected) {
+                        document.getElementById('metrics-card').classList.add('active');
+                        const liveScore = Math.round(metrics.confidence * 100);
+                        document.getElementById('ring-pct').innerText = `${liveScore}%`;
+                        document.getElementById('emotion-value').innerText = metrics.behavior;
+                        document.getElementById('api-status-text').innerText = `Tracking: ${metrics.type}`;
 
-                    // Heartbeat / Marker Accumulation
-                    if (data.heartbeat) {
-                        const h = data.heartbeat;
-                        const log = document.getElementById('marker-log');
-                        h.markers.forEach(m => {
-                            live_sessions_markers_count++;
-                            const pill = document.createElement('span');
-                            pill.className = 'marker-pill';
-                            pill.innerText = `📎 ${m}`;
-                            log.prepend(pill);
-                        });
-
-                        if (h.is_ready && !synthesisReady) {
-                            synthesisReady = true;
-                            document.getElementById('synthesis-ready-banner').classList.remove('hidden');
-                            showToast("Observation complete. Ready for analysis.", "🧠");
+                        if (data.heartbeat) {
+                            const h = data.heartbeat;
+                            h.markers.forEach(m => {
+                                live_sessions_markers_count++;
+                                const pill = document.createElement('span');
+                                pill.className = 'marker-pill';
+                                pill.innerText = `📎 ${m}`;
+                                document.getElementById('marker-log').prepend(pill);
+                            });
+                            if (h.is_ready && !synthesisReady) {
+                                synthesisReady = true;
+                                document.getElementById('synthesis-ready-banner').classList.remove('hidden');
+                                showToast("Observation complete.", "🧠");
+                            }
                         }
                     }
-                } else {
-                    document.getElementById('api-status-text').innerText = `Searching...`;
                 }
-            }
+            };
+
+            streamSocket.onerror = (e) => {
+                logDebug(`Link Refused - Retrying...`, '#f55');
+                if (retryCount < 5) {
+                    retryCount++;
+                    setTimeout(connect, 2000);
+                } else {
+                    logDebug(`CRITICAL: Neural Link Persistent Failure`, '#f55');
+                    showToast('System Link Failed', '❌');
+                }
+            };
+
+            streamSocket.onclose = () => {
+                if (streamInterval) clearInterval(streamInterval);
+            };
         };
+
+        connect();
+        document.getElementById('analysis-results').classList.remove('hidden');
+        document.getElementById('insight-idle').classList.add('hidden');
 
     } catch (err) {
         console.error("Camera Initialisation Error:", err);
-        showToast(err.message || 'Camera access denied or device locked', '❌');
+        showToast(err.message || 'Camera access denied', '❌');
     }
 }
 

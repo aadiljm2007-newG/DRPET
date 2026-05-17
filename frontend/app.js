@@ -358,6 +358,13 @@ async function startLiveStream() {
 
         streamSocket.onmessage = (event) => {
             const data = JSON.parse(event.data);
+
+            if (data.status === "connected") {
+                console.log("Neural Link Handshake:", data.message);
+                document.getElementById('api-status-text').innerText = "Establishing Interface...";
+                showToast(data.message, "🛰️");
+            }
+
             if (data.status === "active") {
                 currentSessionId = data.session_id;
                 const metrics = data.live_metrics;

@@ -12,8 +12,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all the backend logic
+# Copy all the backend logic and models
 COPY backend/ ./backend/
+COPY *.pt .
 
 # Hugging Face Spaces specifically looks for applications running on port 7860
 ENV HOST=0.0.0.0

@@ -27,7 +27,13 @@ app = FastAPI(title="Dr. PET - Behavior Intelligence System")
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "https://frontend-coemxo2q4-aadiljm2007-8313s-projects.vercel.app",
+        "https://frontend-cts.vercel.app",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,6 +88,9 @@ async def websocket_endpoint(websocket: WebSocket, node_id: str = "anonymous"):
     """
     await websocket.accept()
     session_id = node_id # Use the stable ID from the client
+    
+    # 0. Send Immediate Confirmation
+    await websocket.send_json({"status": "connected", "message": "Neural Link Handshake Successful"})
     
     # Only initialize if this is a fresh node or session was previously cleared
     if session_id not in live_sessions or not live_sessions[session_id].get("markers"):

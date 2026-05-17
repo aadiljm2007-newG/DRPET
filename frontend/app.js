@@ -15,6 +15,28 @@ if (!nodeId) {
     localStorage.setItem('drpet_node_id', nodeId);
 }
 
+// === DIAGNOSTIC OVERLAY ===
+function createDebugOverlay() {
+    const div = document.createElement('div');
+    div.id = 'debug-overlay';
+    div.style = 'position:fixed; bottom:10px; right:10px; background:rgba(0,0,0,0.8); color:#0f0; font-family:monospace; font-size:10px; padding:10px; border-radius:5px; z-index:9999; max-width:300px; max-height:200px; overflow:auto; pointer-events:none;';
+    document.body.appendChild(div);
+}
+function logDebug(msg, color = '#0f0') {
+    const overlay = document.getElementById('debug-overlay');
+    if (!overlay) return;
+    const line = document.createElement('div');
+    line.style.color = color;
+    line.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    overlay.appendChild(line);
+    overlay.scrollTop = overlay.scrollHeight;
+}
+window.onerror = (msg, url, line) => logDebug(`ERR: ${msg} @ ${line}`, '#f55');
+window.onunhandledrejection = (e) => logDebug(`PROMISE ERR: ${e.reason}`, '#f55');
+createDebugOverlay();
+logDebug(`Platform Booted: ${nodeId}`);
+logDebug(`Target API: ${API_URL}`);
+
 // UI Elements
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
@@ -322,8 +344,10 @@ async function startLiveStream() {
         document.getElementById('analysis-results').classList.remove('hidden');
         document.getElementById('insight-idle').classList.add('hidden');
         document.getElementById('api-status-text').innerText = "Establishing Neural Link...";
+        logDebug(`Connecting WS: ${wsProtocol}://${wsHost}...`);
 
         streamSocket.onopen = () => {
+            logDebug("WebSocket Handshake Success", "#0f0");
             console.log("WebSocket connected to behavioral engine.");
             showToast("Camera Link Active", "📡");
 
@@ -344,6 +368,7 @@ async function startLiveStream() {
         };
 
         streamSocket.onerror = (e) => {
+            logDebug(`WebSocket Connectivity Error`, '#f55');
             console.error("WebSocket Connection Error:", e);
             showToast('System Link Failed', '❌');
             document.getElementById('api-status-text').innerText = "Offline";

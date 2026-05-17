@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>paw dom - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body class="login-body">
+    <div class="login-overlay"></div>
+
+    <div class="login-modal">
+        <div class="login-logo">paw dom</div>
+        <h2 class="login-title">Welcome back to the clinic</h2>
+
+        <form action="index.html" method="GET">
+            <div class="input-group">
+                <label for="email" class="sr-only">Email Address</label>
+                <input type="email" id="email" placeholder="Email address" title="Email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password" class="sr-only">Password</label>
+                <input type="password" id="password" placeholder="Password" title="Password" required>
+            </div>
+
+            <button type="submit" class="btn-pinterest">Log In</button>
+        </form>
+
+        <div class="login-divider">OR</div>
+
+        <div class="login-links">
+            <a href="#">Forgot your password?</a>
+            <br><br>
+            <span class="signup-text">
+                Not on paw dom yet? <a href="#">Sign up</a>
+            </span>
+        </div>
+    </div>
+</body>
+
+</html>

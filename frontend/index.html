@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dr. PET — Intelligent Pet Behavior Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#c3c0ff",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#351000",
+                        "surface-tint": "#4d44e3",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#0f0069",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-container": "#eceef0",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#d5e3fd",
+                        "surface-variant": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#a44100",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "tertiary": "#7e3000",
+                        "primary-fixed": "#e2dfff",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c7c4d8",
+                        "outline": "#777587",
+                        "surface": "#f7f9fb",
+                        "on-surface-variant": "#464555",
+                        "secondary": "#515f74",
+                        "on-secondary-container": "#57657b",
+                        "primary": "#3525cd",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface-container-high": "#e6e8ea",
+                        "on-surface": "#191c1e",
+                        "on-primary-container": "#dad7ff",
+                        "background": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+
+    <!-- Seamless Sidebar -->
+    <aside
+        class="fixed left-0 top-0 h-full w-20 hover:w-64 z-50 transition-all duration-500 bg-surface flex flex-col py-10 group shadow-[0_10px_40px_rgba(0,0,0,0.01)] border-r border-surface-container-highest/10">
+        <div class="px-6 mb-12 flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-on-primary text-[18px]">pets</span>
+            </div>
+            <div
+                class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden whitespace-nowrap">
+                <h1 class="font-display text-xl text-primary font-bold">Dr. PET</h1>
+                <p class="text-[10px] text-on-surface-variant/60 tracking-[0.2em] font-bold uppercase">Clinical Intel
+                </p>
+            </div>
+        </div>
+        <nav class="flex-1 px-4 flex flex-col gap-2">
+            <a class="flex items-center gap-4 p-3 bg-primary-container/10 text-primary rounded-xl transition-all duration-300"
+                href="index.html">
+                <span class="material-symbols-outlined shrink-0">grid_view</span>
+                <span class="opacity-0 group-hover:opacity-100 font-semibold whitespace-nowrap">Overview</span>
+            </a>
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant opacity-40 hover:opacity-100 hover:bg-surface-container-highest rounded-xl transition-all duration-300"
+                href="#">
+                <span class="material-symbols-outlined shrink-0">folder_open</span>
+                <span class="opacity-0 group-hover:opacity-100 font-semibold whitespace-nowrap">Records</span>
+            </a>
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant opacity-40 hover:opacity-100 hover:bg-surface-container-highest rounded-xl transition-all duration-300"
+                href="javascript:void(0)" onclick="findNearbyVets()">
+                <span class="material-symbols-outlined shrink-0">link</span>
+                <span class="opacity-0 group-hover:opacity-100 font-semibold whitespace-nowrap">Vet Link</span>
+            </a>
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant opacity-40 hover:opacity-100 hover:bg-surface-container-highest rounded-xl transition-all duration-300"
+                href="javascript:void(0)" onclick="openLicenseModal()">
+                <span class="material-symbols-outlined shrink-0">verified_user</span>
+                <span class="opacity-0 group-hover:opacity-100 font-semibold whitespace-nowrap">Official Licence</span>
+            </a>
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant opacity-40 hover:opacity-100 hover:bg-surface-container-highest rounded-xl transition-all duration-300"
+                href="javascript:void(0)" onclick="openSupportModal()">
+                <span class="material-symbols-outlined shrink-0">help_outline</span>
+                <span class="opacity-0 group-hover:opacity-100 font-semibold whitespace-nowrap">Support</span>
+            </a>
+        </nav>
+        <div class="px-4 mt-auto">
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant opacity-40 hover:opacity-100 transition-all duration-300"
+                href="login.html">
+                <span class="material-symbols-outlined shrink-0">logout</span>
+                <span class="opacity-0 group-hover:opacity-100 font-semibold whitespace-nowrap">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Grid -->
+    <main class="ml-20 flex h-screen overflow-hidden">
+        <!-- Main Vision Feed (Center Panel) -->
+        <section class="w-1/2 p-6 flex flex-col gap-6 overflow-hidden">
+            <!-- Header -->
+            <header class="flex justify-between items-center h-10">
+                <div>
+                    <h2 class="text-2xl font-bold text-on-surface tracking-tight">Intelligence Hub</h2>
+                    <p class="text-on-surface-variant/60 text-[10px] font-bold uppercase tracking-widest"
+                        id="pet-id-label">Observing Subject</p>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low rounded-full transition-all"
+                    id="api-status-pill">
+                    <span class="w-2 h-2 rounded-full bg-primary" id="status-dot"></span>
+                    <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest"
+                        id="api-status-text">Establish Neural Link</span>
+                </div>
+            </header>
+
+            <!-- Video/Dropzone Container -->
+            <div class="relative flex-1 bg-surface-container-highest rounded-[40px] overflow-hidden shadow-[0_10px_60px_rgba(0,0,0,0.04)] group"
+                id="drop-zone">
+
+                <!-- Vision Feed -->
+                <div class="w-full h-full relative">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 transition-all duration-500"
+                        id="vision-placeholder">
+                        <div class="text-6xl mb-6 grayscale opacity-20">🐾</div>
+                        <h3 class="text-xl font-bold mb-2">Awaiting Visual Input</h3>
+                        <p class="text-on-surface-variant/60 max-w-sm">Drop a video here or start the live camera to
+                            begin behavioral synchronization.</p>
+                        <button
+                            class="mt-8 px-8 py-3 bg-primary text-white rounded-2xl font-bold text-sm tracking-widest hover:shadow-xl transition-all"
+                            onclick="document.getElementById('file-input').click()">CHOOSE FILE</button>
+                    </div>
+
+                    <video id="live-video" class="hidden w-full h-full object-cover" autoplay></video>
+                    <canvas id="live-canvas" class="hidden absolute inset-0 w-full h-full object-cover"></canvas>
+                </div>
+
+                <!-- HUD Overlays (Top) -->
+                <div class="absolute top-8 left-8 flex flex-col gap-4 pointer-events-none">
+                    <div class="backdrop-blur-2xl bg-indigo-950/80 p-5 rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-500 opacity-0 transform -translate-y-4"
+                        id="hud-stats">
+                        <span
+                            class="text-[9px] font-extrabold text-indigo-300 block mb-1.5 uppercase tracking-[0.15em]">Activity
+                            State</span>
+                        <span class="text-white font-bold text-base tracking-tight" id="emotion-value-hud">Search
+                            Algorithm Active</span>
+                    </div>
+                </div>
+
+                <!-- HUD Overlays (Live Indicator) -->
+                <div class="absolute top-8 right-8 pointer-events-none">
+                    <div class="hidden flex items-center gap-2 bg-red-500/80 backdrop-blur-md px-4 py-2 rounded-full text-white font-bold text-[10px] tracking-widest animate-pulse"
+                        id="live-indicator">
+                        <span class="w-2 h-2 bg-white rounded-full"></span> LIVE
+                    </div>
+                </div>
+
+                <!-- Controls Overlays (Bottom) -->
+                <div class="absolute bottom-8 right-8 flex gap-4">
+                    <div class="backdrop-blur-xl bg-primary/80 p-5 rounded-full shadow-2xl cursor-pointer hover:scale-110 transition-transform duration-300"
+                        id="live-stream-btn" onclick="startLiveStream()">
+                        <span class="material-symbols-outlined text-white">videocam</span>
+                    </div>
+                    <div class="hidden backdrop-blur-xl bg-red-500 p-5 rounded-full shadow-2xl cursor-pointer hover:scale-110 transition-transform duration-300"
+                        id="stop-stream-btn" onclick="stopLiveStream()">
+                        <span class="material-symbols-outlined text-white">videocam_off</span>
+                    </div>
+                </div>
+
+                <!-- Progress State Overlay -->
+                <div class="absolute inset-0 bg-white/80 backdrop-blur-md hidden flex flex-col items-center justify-center p-12 transition-all"
+                    id="upload-progress">
+                    <div class="w-full max-w-md">
+                        <div class="flex justify-between items-end mb-4">
+                            <div>
+                                <h4 class="text-2xl font-bold text-primary" id="progress-pct">0%</h4>
+                                <p class="text-on-surface-variant font-bold text-[10px] tracking-widest uppercase"
+                                    id="progress-label">Syncing Neural Data</p>
+                            </div>
+                            <div class="flex gap-1" id="progress-steps">
+                                <div class="w-1.5 h-6 bg-primary-container/20 rounded-full" id="step-upload"></div>
+                                <div class="w-1.5 h-6 bg-primary-container/20 rounded-full" id="step-vision"></div>
+                                <div class="w-1.5 h-6 bg-primary-container/20 rounded-full" id="step-acoustic"></div>
+                                <div class="w-1.5 h-6 bg-primary-container/20 rounded-full" id="step-report"></div>
+                            </div>
+                        </div>
+                        <div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                            <div class="h-full bg-primary transition-all duration-300 progress-bar-w0"
+                                id="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Synthesis Ready Notify -->
+                <div id="synthesis-ready-banner"
+                    class="absolute bottom-24 left-1/2 -translate-x-1/2 hidden z-40 w-full max-w-sm">
+                    <div
+                        class="bg-indigo-900/90 backdrop-blur-lg border border-indigo-400/30 p-4 rounded-3xl shadow-2xl flex items-center justify-between gap-4">
+                        <span class="text-white text-xs font-medium">🧠 Deep diagnosis ready.</span>
+                        <button
+                            class="px-4 py-2 bg-indigo-500 text-white rounded-xl text-[10px] font-bold tracking-widest hover:bg-indigo-400"
+                            onclick="stopLiveStream()">SYNTHESIZE</button>
+                    </div>
+                </div>
+
+                <!-- Subtle Grid -->
+                <div class="absolute inset-0 pointer-events-none opacity-[0.03] bg-subtle-grid">
+                </div>
+
+                <!-- Silent file input -->
+                <input type="file" id="file-input" hidden accept="video/*">
+            </div>
+
+            <!-- Biometric Audit (Bottom Panel) -->
+            <div
+                class="h-1/3 bg-surface-container-low/30 rounded-[40px] p-8 overflow-hidden flex flex-col shadow-inner border border-white/50">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <h3 class="font-bold text-[10px] text-on-surface-variant tracking-[0.2em] uppercase">Biometric
+                            Stream</h3>
+                        <div class="flex gap-4" id="marker-log">
+                            <!-- Live Markers appear here as pills -->
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-bold text-on-surface-variant/40 tracking-widest">OSCILLATION
+                        SIGNAL</span>
+                </div>
+                <div class="flex-1 min-h-0">
+                    <canvas id="behaviorChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Insight Panel (Right Panel) -->
+        <section
+            class="w-1/2 p-8 bg-white flex flex-col gap-4 shadow-[-10px_0_40px_rgba(0,0,0,0.02)] z-10 overflow-y-auto no-scrollbar">
+
+            <!-- Health Ring -->
+            <div class="flex flex-col items-center py-6 mb-4">
+                <div class="relative w-56 h-56 flex items-center justify-center">
+                    <svg class="absolute inset-0 w-full h-full -rotate-90">
+                        <circle class="text-surface-container-low" cx="112" cy="112" fill="transparent" r="100"
+                            stroke="currentColor" stroke-width="2"></circle>
+                        <circle class="text-primary transition-all duration-1000 ease-in-out" cx="112" cy="112"
+                            fill="transparent" id="ring-fill" r="100" stroke="currentColor" stroke-linecap="round"
+                            stroke-width="6" stroke-dasharray="0, 628"></circle>
+                    </svg>
+                    <div class="text-center">
+                        <span class="text-6xl font-extralight text-primary block tracking-tighter"
+                            id="ring-pct">0%</span>
+                        <span
+                            class="text-[9px] font-bold text-on-surface-variant/40 tracking-[0.3em] uppercase block mt-1">Behavior
+                            Fidelity</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insight Section -->
+            <div class="flex-1 flex flex-col gap-6" id="analysis-results">
+
+                <!-- Quick Feedback Stats -->
+                <div class="grid grid-cols-2 gap-4" id="metrics-card">
+                    <div class="p-5 rounded-3xl bg-surface-container-low/50 border border-white/50">
+                        <span
+                            class="text-[9px] font-bold text-on-surface-variant/60 tracking-widest block mb-2 uppercase">Happiness
+                            Index</span>
+                        <span class="text-2xl font-bold text-on-surface" id="happiness-score-text">—</span>
+                    </div>
+                    <div class="p-5 rounded-3xl bg-surface-container-low/50 border border-white/50">
+                        <span
+                            class="text-[9px] font-bold text-on-surface-variant/60 tracking-widest block mb-2 uppercase">Acoustic
+                            Logic</span>
+                        <span class="text-sm font-bold text-on-surface line-clamp-1" id="acoustic-sentiment">—</span>
+                    </div>
+                    <div class="p-5 rounded-3xl bg-surface-container-low/50 border border-white/50 col-span-2">
+                        <span
+                            class="text-[9px] font-bold text-on-surface-variant/60 tracking-widest block mb-1 uppercase">Temporal
+                            Pattern</span>
+                        <span class="text-sm font-bold" id="anomaly-status">Awaiting Evidence</span>
+                    </div>
+                </div>
+
+                <!-- Findings -->
+                <div
+                    class="bg-surface-container-low rounded-[32px] p-8 flex flex-col border border-on-surface-variant/5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-primary text-[20px] icon-fill">auto_awesome</span>
+                        <h4 class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Clinical
+                            Summary</h4>
+                        <span
+                            class="bg-primary/10 text-primary text-[8px] font-extrabold px-2 py-1 rounded-full uppercase tracking-tighter ml-auto">AI
+                            Audit</span>
+                    </div>
+
+                    <div id="insight-idle"
+                        class="flex flex-col items-center justify-center py-12 text-center opacity-40">
+                        <div class="text-4xl mb-4">💭</div>
+                        <p class="text-xs font-medium leading-relaxed max-w-[200px]">Data will be synthesized into
+                            behavioral narratives here.</p>
+                    </div>
+
+                    <div class="hidden space-y-6" id="analysis-ready-state">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <span id="emotion-icon" class="text-2xl">😐</span>
+                                <h5 class="font-bold text-lg text-on-surface" id="emotion-value">State: Searching</h5>
+                            </div>
+                            <p class="text-on-surface-variant text-sm leading-relaxed" id="analysis-summary">
+                                Analyzing multi-modal sensory inputs...
+                            </p>
+                        </div>
+
+                        <div class="pt-6 border-t border-on-surface-variant/10">
+                            <p class="text-[9px] font-bold text-on-surface-variant/40 tracking-widest uppercase mb-4">
+                                Key Observations</p>
+                            <ul id="keyPointsList" class="space-y-3 text-[13px] text-on-surface-variant font-medium">
+                            </ul>
+                        </div>
+
+                        <div class="pt-6 border-t border-on-surface-variant/10">
+                            <p class="text-[9px] font-bold text-on-surface-variant/40 tracking-widest uppercase mb-4">
+                                Care Recommendations</p>
+                            <ul id="recommendations" class="space-y-3 text-[13px] text-on-surface-variant font-medium">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex gap-3">
+                        <button
+                            class="flex-1 py-4 bg-primary text-white rounded-2xl font-bold text-[10px] tracking-widest hover:shadow-xl transition-all active:scale-95"
+                            id="downloadAuditBtn">CLINICAL REPORT</button>
+                        <button
+                            class="px-5 py-4 bg-surface-container-highest text-on-surface rounded-2xl font-bold text-[10px]"
+                            onclick="resetUI()">
+                            <span class="material-symbols-outlined text-[18px]">refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Breed Card -->
+                <div class="bg-surface-container-low rounded-[32px] p-8 border border-white/50" id="rag-box">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="material-symbols-outlined text-on-surface-variant/40 text-[20px]">info</span>
+                        <h4 class="text-[10px] font-bold text-on-surface-variant/40 tracking-widest uppercase">Breed
+                            Profile</h4>
+                    </div>
+                    <p id="rag-text" class="text-xs font-semibold text-on-surface-variant/40 italic">Breed intelligence
+                        will sync post-analysis.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FAB for New Analysis -->
+    <button
+        class="fixed bottom-10 right-10 w-16 h-16 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 z-50"
+        onclick="resetUI()">
+        <span class="material-symbols-outlined text-3xl">add</span>
+    </button>
+
+    <!-- Vet Link Modal -->
+    <div id="vet-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 sm:p-12">
+        <div class="absolute inset-0 bg-indigo-950/20 backdrop-blur-md" onclick="closeVetModal()"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[80vh] transition-all transform scale-95 opacity-0 duration-300"
+            id="vet-modal-content">
+            <header
+                class="p-8 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-low/30">
+                <div>
+                    <h3 class="text-2xl font-bold text-on-surface">Nearby Veterinary Services</h3>
+                    <p class="text-xs font-bold text-on-surface-variant/40 uppercase tracking-widest mt-1">OpenStreetMap
+                        Real-time Sync</p>
+                </div>
+                <button
+                    class="w-12 h-12 rounded-2xl hover:bg-surface-container-highest transition-colors flex items-center justify-center"
+                    onclick="closeVetModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 no-scrollbar" id="vet-results-list">
+                <!-- Initial State -->
+                <div class="flex flex-col items-center justify-center py-20 text-center" id="vet-loading">
+                    <div class="w-16 h-16 border-4 border-indigo-100 border-t-primary rounded-full animate-spin mb-6">
+                    </div>
+                    <p class="font-bold text-on-surface-variant/60 tracking-widest text-[10px] uppercase">Scanning
+                        Regional Satellite Data...</p>
+                </div>
+
+                <!-- Results Container (Hidden initially) -->
+                <div class="hidden grid gap-4" id="vet-results-grid"></div>
+            </div>
+
+            <footer class="p-6 bg-surface-container-low/30 border-t border-surface-container-highest text-center">
+                <p class="text-[9px] font-bold text-on-surface-variant/30 uppercase tracking-[0.2em]">Data provided by
+                    Overpass API & OpenStreetMap</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Official License Modal -->
+    <div id="license-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 sm:p-12">
+        <div class="absolute inset-0 bg-indigo-950/20 backdrop-blur-md" onclick="closeLicenseModal()"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[80vh] transition-all transform scale-95 opacity-0 duration-300"
+            id="license-modal-content">
+            <header
+                class="p-8 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-low/30">
+                <div>
+                    <h3 class="text-2xl font-bold text-on-surface">Official Pet Registration</h3>
+                    <p class="text-xs font-bold text-on-surface-variant/40 uppercase tracking-widest mt-1">Global &
+                        Local Directories</p>
+                </div>
+                <button
+                    class="w-12 h-12 rounded-2xl hover:bg-surface-container-highest transition-colors flex items-center justify-center"
+                    onclick="closeLicenseModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 no-scrollbar bg-surface-bright space-y-8">
+
+                <!-- Regional Section -->
+                <section>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="material-symbols-outlined text-primary">location_city</span>
+                        <h4 class="text-sm font-bold text-on-surface uppercase tracking-widest">Regional Licenses</h4>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <a href="https://www.google.com/search?q=local+county+animal+control+pet+registration"
+                            target="_blank" rel="noopener noreferrer"
+                            class="p-5 rounded-3xl bg-white border border-surface-container-highest hover:border-primary hover:shadow-lg transition-all group !border text-left flex flex-col gap-2">
+                            <span class="font-bold text-on-surface group-hover:text-primary transition-colors">Local
+                                City/County Gov</span>
+                            <span class="text-xs text-on-surface-variant line-clamp-2">Search for your local municipal
+                                animal control or city hall's official pet registration portal.</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- National Section -->
+                <section>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="material-symbols-outlined text-primary">public</span>
+                        <h4 class="text-sm font-bold text-on-surface uppercase tracking-widest">National Licenses</h4>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <a href="https://www.akcreunite.org/" target="_blank" rel="noopener noreferrer"
+                            class="p-5 rounded-3xl bg-white border border-surface-container-highest hover:border-primary hover:shadow-lg transition-all group !border text-left flex flex-col gap-2">
+                            <span class="font-bold text-on-surface group-hover:text-primary transition-colors">AKC
+                                Reunite</span>
+                            <span class="text-xs text-on-surface-variant line-clamp-2">The largest non-profit pet
+                                microchip and recovery service in the US.</span>
+                        </a>
+                        <a href="https://www.petlink.net/" target="_blank" rel="noopener noreferrer"
+                            class="p-5 rounded-3xl bg-white border border-surface-container-highest hover:border-primary hover:shadow-lg transition-all group !border text-left flex flex-col gap-2">
+                            <span
+                                class="font-bold text-on-surface group-hover:text-primary transition-colors">PetLink</span>
+                            <span class="text-xs text-on-surface-variant line-clamp-2">A national pet registry and
+                                recovery network.</span>
+                        </a>
+                        <a href="https://www.found.org/" target="_blank" rel="noopener noreferrer"
+                            class="p-5 rounded-3xl bg-white border border-surface-container-highest hover:border-primary hover:shadow-lg transition-all group !border text-left flex flex-col gap-2">
+                            <span class="font-bold text-on-surface group-hover:text-primary transition-colors">Found
+                                Animals</span>
+                            <span class="text-xs text-on-surface-variant line-clamp-2">A free, national microchip
+                                registry for all pets.</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- International Section -->
+                <section>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="material-symbols-outlined text-primary">language</span>
+                        <h4 class="text-sm font-bold text-on-surface uppercase tracking-widest">International Licenses
+                        </h4>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <a href="https://www.petmaxx.com/" target="_blank" rel="noopener noreferrer"
+                            class="p-5 rounded-3xl bg-white border border-surface-container-highest hover:border-primary hover:shadow-lg transition-all group !border text-left flex flex-col gap-2">
+                            <span
+                                class="font-bold text-on-surface group-hover:text-primary transition-colors">Petmaxx</span>
+                            <span class="text-xs text-on-surface-variant line-clamp-2">International search engine for
+                                identifying pets by their microchip number.</span>
+                        </a>
+                        <a href="https://www.europetnet.org/" target="_blank" rel="noopener noreferrer"
+                            class="p-5 rounded-3xl bg-white border border-surface-container-highest hover:border-primary hover:shadow-lg transition-all group !border text-left flex flex-col gap-2">
+                            <span
+                                class="font-bold text-on-surface group-hover:text-primary transition-colors">Europetnet</span>
+                            <span class="text-xs text-on-surface-variant line-clamp-2">A group of national and local
+                                associations based across Europe who share registry details.</span>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="p-6 bg-surface-container-low/30 border-t border-surface-container-highest text-center">
+                <p class="text-[9px] font-bold text-on-surface-variant/30 uppercase tracking-[0.2em]">Verified Registry
+                    Directories</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Contact Info Modal -->
+    <div id="contact-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-6 sm:p-12">
+        <div class="absolute inset-0 bg-indigo-950/40 backdrop-blur-sm" onclick="closeContactModal()"></div>
+        <div class="relative w-full max-w-sm bg-white rounded-[32px] shadow-2xl overflow-hidden flex flex-col transition-all transform scale-95 opacity-0 duration-300"
+            id="contact-modal-content">
+            <div class="p-8 text-center flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <span class="material-symbols-outlined text-3xl icon-fill">contact_page</span>
+                </div>
+                <h3 class="text-xl font-bold text-on-surface mb-2" id="contact-name">Clinic Name</h3>
+                <p class="text-[13px] text-on-surface-variant mb-6" id="contact-address">Address</p>
+                <div class="w-full flex flex-col gap-3 mb-6" id="contact-methods-container">
+                    <!-- Dynamic contact methods injected here -->
+                </div>
+                <button
+                    class="w-full py-3 bg-surface-container-highest hover:bg-surface-container-highest/80 text-on-surface rounded-xl text-xs font-bold tracking-widest transition-all"
+                    onclick="closeContactModal()">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="support-modal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-6 sm:p-12">
+        <div class="absolute inset-0 bg-indigo-950/20 backdrop-blur-md" onclick="closeSupportModal()"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[80vh] transition-all transform scale-95 opacity-0 duration-300"
+            id="support-modal-content">
+            <header
+                class="p-8 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-low/30">
+                <div>
+                    <h3 class="text-2xl font-bold text-on-surface">Dr. PET Guidelines</h3>
+                    <p class="text-xs font-bold text-on-surface-variant/40 uppercase tracking-widest mt-1">Platform
+                        Instructions</p>
+                </div>
+                <button
+                    class="w-12 h-12 rounded-2xl hover:bg-surface-container-highest transition-colors flex items-center justify-center"
+                    onclick="closeSupportModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 no-scrollbar bg-surface-bright space-y-6">
+                <!-- Step 1 -->
+                <div class="p-6 bg-white rounded-3xl border border-surface-container-highest shadow-sm">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            1</div>
+                        <h4 class="font-bold text-lg text-on-surface">Establish Neural Link</h4>
+                    </div>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                        To begin analysis, click the <strong>videocam icon</strong> in the bottom right of the main feed
+                        to start a live camera session, or simply drag-and-drop a pre-recorded video of your pet into
+                        the main viewing area.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="p-6 bg-white rounded-3xl border border-surface-container-highest shadow-sm">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            2</div>
+                        <h4 class="font-bold text-lg text-on-surface">Behavior Synthesis</h4>
+                    </div>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                        Once the engine detects movement, it tracks biometric markers and acoustic signals. Stopping the
+                        live feed triggers <strong>Deep AI Synthesis</strong>, automatically aggregating the evidence
+                        into a comprehensive clinical narrative on the right.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="p-6 bg-white rounded-3xl border border-surface-container-highest shadow-sm">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            3</div>
+                        <h4 class="font-bold text-lg text-on-surface">Vet Link & License Hub</h4>
+                    </div>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                        Access the sidebar tools for extended utilities. <strong>Vet Link</strong> triangulates your GPS
+                        to locate nearby clinics and generate live contact cards. <strong>Official Licence</strong>
+                        provides quick links to verified external registries.
+                    </p>
+                </div>
+
+                <div class="flex justify-center pt-2">
+                    <p class="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">Powered by
+                        Advanced Agentic Processing</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="fixed bottom-32 right-10 bg-white shadow-2xl border border-surface-container-highest rounded-2xl p-4 flex items-center gap-4 transition-all duration-500 transform translate-y-24 opacity-0 z-50"
+        id="toast">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary" id="toast-icon">✅
+        </div>
+        <div class="text-xs font-bold text-on-surface" id="toast-msg">Neural synchronization complete.</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js?v=2.7"></script>
+</body>
+
+</html>

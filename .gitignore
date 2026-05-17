@@ -1,0 +1,16 @@
+.env
+models/
+__pycache__/
+*.pt
+tmp/
+data/
+backend/data/
+*.log
+*.txt
+!requirements.txt
+!README.md
+!ui_specs.md
+*.jpg
+*.png
+.vercel/
+node_modules/

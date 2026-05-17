@@ -343,27 +343,12 @@ async function startLiveStream() {
             logDebug(`Attempting Link (${retryCount + 1})...`);
             streamSocket = new WebSocket(`${wsProtocol}://${wsHost}/ws/stream?node_id=${nodeId}`);
 
-            streamSocket.onopen = () => {
-                logDebug("WebSocket Handshake Success", "#0f0");
-                showToast("Camera Link Active", "📡");
-                retryCount = 0;
-
-                streamInterval = setInterval(() => {
-                    if (streamSocket.readyState === WebSocket.OPEN) {
-                        const scale = Math.min(640 / video.videoWidth, 1.0);
-                        canvas.width = video.videoWidth * scale;
-                        canvas.height = video.videoHeight * scale;
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob((blob) => {
-                            if (blob) streamSocket.send(blob);
-                        }, 'image/jpeg', 0.5);
-                    }
-                }, 400);
-            };
-
             streamSocket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                if (data.status === "connected") logDebug("⚡ Neural Pulse Stabilized");
+                if (data.status === "connected") {
+                    logDebug("⚡ Neural Pulse Stabilized", "#0f0");
+                    document.getElementById('api-status-text').innerText = "System Synced";
+                }
                 if (data.status === "active") {
                     currentSessionId = data.session_id;
                     const metrics = data.live_metrics;
@@ -389,8 +374,35 @@ async function startLiveStream() {
                                 showToast("Observation complete.", "🧠");
                             }
                         }
+                    } else {
+                        // Optional: Show "Searching" feedback
+                        document.getElementById('api-status-text').innerText = "Scanning Environment...";
                     }
                 }
+            };
+
+            streamSocket.onopen = () => {
+                logDebug("WebSocket Handshake Success", "#0f0");
+                showToast("Camera Link Active", "📡");
+                retryCount = 0;
+
+                streamInterval = setInterval(() => {
+                    if (streamSocket.readyState === WebSocket.OPEN) {
+                        const scale = Math.min(640 / video.videoWidth, 1.0);
+                        canvas.width = video.videoWidth * scale;
+                        canvas.height = video.videoHeight * scale;
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                streamSocket.send(blob);
+                                if (!window.lastTick || Date.now() - window.lastTick > 2000) {
+                                    logDebug("📤 Packet In-Flight...");
+                                    window.lastTick = Date.now();
+                                }
+                            }
+                        }, 'image/jpeg', 0.5);
+                    }
+                }, 400);
             };
 
             streamSocket.onerror = (e) => {

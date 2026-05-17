@@ -15,3 +15,5 @@ psycopg2-binary
 groq
 python-dotenv
 duckduckgo-search
+reportlab
+google-genai

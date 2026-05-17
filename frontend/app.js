@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:8000';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_URL = isLocal ? 'http://localhost:8000' : 'https://aadiljm-drpet.hf.space';
 let chartInstance = null;
 let lastAnalysisData = null;
 let streamInterval = null;
@@ -312,7 +313,9 @@ async function startLiveStream() {
         document.getElementById('stop-stream-btn').classList.remove('hidden');
 
         console.log(`Attempting Secure WebSocket for ${nodeId}`);
-        streamSocket = new WebSocket(`ws://${window.location.hostname}:8000/ws/stream?node_id=${nodeId}`);
+        const wsProtocol = isLocal ? 'ws' : 'wss';
+        const wsHost = isLocal ? `${window.location.hostname}:8000` : 'aadiljm-drpet.hf.space';
+        streamSocket = new WebSocket(`${wsProtocol}://${wsHost}/ws/stream?node_id=${nodeId}`);
 
         // Reveal results panel immediately for visual feedback
         document.getElementById('analysis-results').classList.remove('hidden');

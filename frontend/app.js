@@ -3,6 +3,7 @@ const API_URL = isLocal ? 'http://localhost:8000' : 'https://aadiljm-drpet.hf.sp
 let chartInstance = null;
 let lastAnalysisData = null;
 let streamInterval = null;
+let streamSocket = null;
 let currentSessionId = null;
 let synthesisReady = false;
 let live_sessions_markers_count = 0;
@@ -405,7 +406,8 @@ async function startLiveStream() {
         };
 
     } catch (err) {
-        showToast('Camera access denied', '❌');
+        console.error("Camera Initialisation Error:", err);
+        showToast(err.message || 'Camera access denied or device locked', '❌');
     }
 }
 
@@ -430,7 +432,7 @@ window.finalizeLiveSession = async () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased to 30s
 
-        const res = await fetch(`/api/live/synthesis`, {
+        const res = await fetch(`${API_URL}/api/live/synthesis`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ session_id: currentSessionId }),

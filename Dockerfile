@@ -18,6 +18,7 @@ COPY backend/ ./backend/
 # Hugging Face Spaces specifically looks for applications running on port 7860
 ENV HOST=0.0.0.0
 ENV PORT=7860
+ENV PYTHONPATH=/app/backend
 EXPOSE 7860
 
 # Boot up the uvicorn server bypassing the main.py hardcoded port
